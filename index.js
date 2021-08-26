@@ -67,3 +67,32 @@ app.get("/api/v1/class_data/:id", (req, res) => {
     }
   );
 });
+
+app.put("/api/v1/class_data/:id", (req, res) => {
+  const { id } = req.params;
+  const { level, result } = req.body;
+
+  pool.query(
+    "UPDATE class_data SET level = $1, result = $2 WHERE id = $3",
+    [level, result, id],
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+
+      res.sendStatus(200);
+    }
+  );
+});
+
+app.delete("/api/v1/class_data/:id", (req, res) => {
+  const { id } = req.params;
+
+  pool.query("DELETE FROM class_data WHERE id = $1", [id], (error, results) => {
+    if (error) {
+      throw error;
+    }
+
+    res.sendStatus(200);
+  });
+});
