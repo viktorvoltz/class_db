@@ -1,6 +1,23 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+require("dotenv").config();
+const cloudinary = require("cloudinary").v2;
+const config = require("../utils/config.js")
+
+const CLOUD_NAME = process.env.CLOUD_NAME;
+const API_KEY = process.env.API_KEY;
+const API_SECRET = process.env.API_SECRET;
+
+config
+
+cloudinary.uploader.upload("../assets/Frame6.png", {
+  resource_type: "image"
+}).then((result) => {
+  console.log("succes", JSON.stringify(result, null, 2));
+}).catch((error) => {
+  console.log("error", JSON.stringify(error, null, 2));
+});
 
 const app = express();
 
@@ -8,7 +25,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.listen(8000, () => {
-    console.log(`server is running.`);
+    console.log(`:: server is running.`);
 })
 
 const Pool = require('pg').Pool;
@@ -22,6 +39,7 @@ const pool = new Pool({
 
 app.post("/api/v1/class_data", (req, res) => {
     const {level, result} = req.body;
+    console.log(`the method was ${req.method}`);
 
     pool.query(
         "INSERT INTO class_data (level, result) VALUES ($1, $2)",
@@ -31,7 +49,7 @@ app.post("/api/v1/class_data", (req, res) => {
                 throw error;
             }
 
-            res.sendStatus(201);
+            res.status(201).send({message: {level, result}});
         }
     );
 });
