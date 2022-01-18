@@ -13,15 +13,6 @@ config
 
 let cloudinary_data = {};
 
-cloudinary.uploader.upload("../assets/Frame6.png", {
-  resource_type: "image"
-}).then((result) => {
-  cloudinary_data = JSON.stringify(result, null, 2);
-  //console.log("success", JSON.stringify(result, null, 2));
-  console.log("success", cloudinary_data);
-}).catch((error) => {
-  console.log("error", JSON.stringify(error, null, 2));
-});
 
 const app = express();
 
@@ -29,51 +20,73 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.listen(8000, () => {
-    console.log(`:: server is running.`);
+  console.log(`:: server is running on http://localhost8000`);
 })
 
 const Pool = require('pg').Pool;
 const pool = new Pool({
-    user: "postgres",
-    host: "localhost",
-    database: "class_database",
-    password: "password",
-    port: 5432
+  user: "postgres",
+  host: "localhost",
+  database: "class_database",
+  password: "password",
+  port: 5432
+})
+
+app.post("/api/v1/class_data/upload", (req, res) => {
+  const data = req.body
+  const fileName = data.fileName
+  try {
+    cloudinary.uploader.upload(fileName, {
+      resource_type: "image"
+    }).then((result) => {
+      cloudinary_data = JSON.stringify(result, null, 2);
+      //console.log("success", JSON.stringify(result, null, 2));
+      console.log("success", cloudinary_data);
+    }).catch((error) => {
+      console.log("error", JSON.stringify(error, null, 2));
+    });
+
+    res.status(201).send({message: "file uploaded", data: {cloudinary_data}});
+  } catch (error) {
+    res.status(400).send({ message: "couldn't upload file", data: error })
+    console.log(error)
+  }
+
 })
 
 app.post("/api/v1/class_data", (req, res) => {
-    const {level, result} = req.body;
-    console.log(`the method was ${req.method}`);
+  const { level, result } = req.body;
+  console.log(`the method was ${req.method}`);
 
-    pool.query(
-        "INSERT INTO class_data (level, result) VALUES ($1, $2)",
-        [level, result],
-        (error, results) => {
-            if (error){
-                throw error;
-            }
+  pool.query(
+    "INSERT INTO class_data (level, result) VALUES ($1, $2)",
+    [level, result],
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
 
-            res.status(201).send({message: {level, result}});
-        }
-    );
+      res.status(201).send({ message: { level, result } });
+    }
+  );
 });
 
 
 app.get("/api/v1/class_data", (req, res) => {
-    pool.query(
-      "SELECT id, level, result FROM class_data",
-      [],
-      (error, results) => {
-        if (error) {
-          throw error;
-        }
-  
-        res.status(200).json(results.rows);
+  pool.query(
+    "SELECT id, level, result FROM class_data",
+    [],
+    (error, results) => {
+      if (error) {
+        throw error;
       }
-    );
-  });
 
-  
+      res.status(200).json(results.rows);
+    }
+  );
+});
+
+
 app.get("/api/v1/class_data/:id", (req, res) => {
   const { id } = req.params;
 
