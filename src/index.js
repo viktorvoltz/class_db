@@ -11,10 +11,14 @@ const API_SECRET = process.env.API_SECRET;
 
 config
 
+let cloudinary_data = {};
+
 cloudinary.uploader.upload("../assets/Frame6.png", {
   resource_type: "image"
 }).then((result) => {
-  console.log("succes", JSON.stringify(result, null, 2));
+  cloudinary_data = JSON.stringify(result, null, 2);
+  //console.log("success", JSON.stringify(result, null, 2));
+  console.log("success", cloudinary_data);
 }).catch((error) => {
   console.log("error", JSON.stringify(error, null, 2));
 });
