@@ -2,21 +2,20 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 require("dotenv").config();
-const cloudinary = require("cloudinary").v2;
-const config = require("../utils/config.js")
+//const cloudinary = require("cloudinary").v2;
+const cloudinary = require("../utils/config.js");
+const upload = require('./multer.js')
+const fs = require('fs')
 
 const CLOUD_NAME = process.env.CLOUD_NAME;
 const API_KEY = process.env.API_KEY;
 const API_SECRET = process.env.API_SECRET;
 
-config
-
-let cloudinary_data = {};
-
 
 const app = express();
 
 app.use(cors());
+app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json());
 
 app.listen(8000, () => {
@@ -32,9 +31,42 @@ const pool = new Pool({
   port: 5432
 })
 
-app.post("/api/v1/class_data/upload", (req, res) => {
+
+app.use("/upload", upload.array('image'), async(req, res) => {
+
+  const uploader = async (path) => await cloudinary.uploads(path, 'images');
+
+  if (req.method == 'POST'){
+    const urls = []
+
+    const files = req.files
+
+    for (const file of files){
+      const {path} = file
+
+      const newPath = await uploader(path)
+
+      urls.push(newPath)
+
+      fs.unlinkSync(path)
+    }
+
+    res.status(200).json({
+      message: 'images Uploaded Successfully',
+      data: urls
+    })
+    console.log("success", urls);
+  }else{
+    res.status(405).json({
+      err: "image not uploaded successfully"
+    })
+  }
+})
+
+/*app.post("/api/v1/class_data/upload", (req, res) => {
   const data = req.body
   const fileName = data.fileName
+  let cloudinary_data = {};
   try {
     cloudinary.uploader.upload(fileName, {
       resource_type: "image"
@@ -42,17 +74,17 @@ app.post("/api/v1/class_data/upload", (req, res) => {
       cloudinary_data = JSON.stringify(result, null, 2);
       //console.log("success", JSON.stringify(result, null, 2));
       console.log("success", cloudinary_data);
+      res.status(201).send({message: "success", data: cloudinary_data});
     }).catch((error) => {
       console.log("error", JSON.stringify(error, null, 2));
     });
-
-    res.status(201).send({message: "file uploaded", data: {cloudinary_data}});
+ 
   } catch (error) {
     res.status(400).send({ message: "couldn't upload file", data: error })
     console.log(error)
   }
 
-})
+})*/
 
 app.post("/api/v1/class_data", (req, res) => {
   const { level, result } = req.body;
