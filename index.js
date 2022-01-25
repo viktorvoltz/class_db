@@ -3,8 +3,8 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 require("dotenv").config();
 //const cloudinary = require("cloudinary").v2;
-const cloudinary = require("../utils/config.js");
-const upload = require('./multer.js')
+const cloudinary = require("./utils/config.js");
+const upload = require('./src/multer.js')
 const fs = require('fs')
 
 const CLOUD_NAME = process.env.CLOUD_NAME;
