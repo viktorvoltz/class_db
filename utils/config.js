@@ -1,9 +1,14 @@
 const cloudinary = require("cloudinary");
+require("dotenv").config();
+
+const CLOUD_NAME = process.env.CLOUD_NAME;
+const API_KEY = process.env.API_KEY;
+const API_SECRET = process.env.API_SECRET;
 
 cloudinary.config({
-  cloud_name: 'nonsocloud',
-  api_key: '892665119123113',
-  api_secret: 'A58ebIFf1NHay5gQmQPt-1Tv870'
+  cloud_name: CLOUD_NAME,
+  api_key: API_KEY,
+  api_secret: API_SECRET
 })
 
 exports.uploads = (file, folder) => {
