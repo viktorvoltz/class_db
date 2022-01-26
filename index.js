@@ -33,6 +33,10 @@ const pool = new Pool({
   port: 5432
 })
 
+app.get('/', (req, res) => {
+  console.log("home")
+  res.send("response from home")
+})
 
 app.use("/upload", upload.array('image'), async(req, res) => {
 
@@ -65,10 +69,7 @@ app.use("/upload", upload.array('image'), async(req, res) => {
   }
 })
 
-app.get('/', (req, res) => {
-  console.log("home")
-  res.send("response from home")
-})
+
 
 app.post("/api/v1/class_data", (req, res) => {
   const { level, result } = req.body;
