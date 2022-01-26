@@ -65,28 +65,10 @@ app.use("/upload", upload.array('image'), async(req, res) => {
   }
 })
 
-/*app.post("/api/v1/class_data/upload", (req, res) => {
-  const data = req.body
-  const fileName = data.fileName
-  let cloudinary_data = {};
-  try {
-    cloudinary.uploader.upload(fileName, {
-      resource_type: "image"
-    }).then((result) => {
-      cloudinary_data = JSON.stringify(result, null, 2);
-      //console.log("success", JSON.stringify(result, null, 2));
-      console.log("success", cloudinary_data);
-      res.status(201).send({message: "success", data: cloudinary_data});
-    }).catch((error) => {
-      console.log("error", JSON.stringify(error, null, 2));
-    });
- 
-  } catch (error) {
-    res.status(400).send({ message: "couldn't upload file", data: error })
-    console.log(error)
-  }
-
-})*/
+app.get('/', (req, res) => {
+  console.log("home")
+  res.send("response from home")
+})
 
 app.post("/api/v1/class_data", (req, res) => {
   const { level, result } = req.body;
