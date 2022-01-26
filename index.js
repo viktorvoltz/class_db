@@ -11,6 +11,8 @@ const CLOUD_NAME = process.env.CLOUD_NAME;
 const API_KEY = process.env.API_KEY;
 const API_SECRET = process.env.API_SECRET;
 
+const PORT = process.env.PORT || 8000;
+
 
 const app = express();
 
@@ -18,8 +20,8 @@ app.use(cors());
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json());
 
-app.listen(8000, () => {
-  console.log(`:: server is running on http://localhost8000`);
+app.listen(PORT, () => {
+  console.log(`:: server is running on http://localhost${PORT}`);
 })
 
 const Pool = require('pg').Pool;
